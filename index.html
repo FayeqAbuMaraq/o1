@@ -279,6 +279,11 @@
                         <svg class="ic" aria-hidden="true"><use href="#i-sandwich"/></svg>
                     </button>
                 </div>
+                <div class="kid" id="o2-kid">
+                    <img src="assets/media/kid.webp" width="560" height="957" alt="طفل O2 ماسك خرطوم" decoding="async" draggable="false">
+                    <i class="kid-nozzle" id="kid-nozzle" aria-hidden="true"></i>
+                </div>
+
             </div>
 
             <!-- Points Dashboard Card (Right side on Lg) -->
@@ -290,13 +295,21 @@
                     <div class="relative z-10">
                         <div class="flex justify-between items-start mb-6">
                             <div>
-                                <h2 class="text-xl text-zinc-300 font-semibold mb-1">رصيد النقاط الحالي</h2>
+                                <h2 class="text-xl text-zinc-300 font-semibold mb-1">النقاط المتاح صرفها</h2>
                                 <div class="flex items-center gap-3 flex-wrap relative" id="pts-row">
                                     <div class="o2-coin" aria-hidden="true"><div class="oc-in" id="o2-coin"></div></div>
                                     <span class="points-number text-6xl md:text-7xl font-black" id="points-counter">0</span>
                                     <span class="text-xl text-o2-red font-bold">نقطة</span>
                                 </div>
-                                <p class="lt-line">إجمالي ما كسبته: <b id="lt-total">0</b> نقطة</p>
+                                <p class="spend-hint">بتصرفها على المكافآت وبتنقص لما تستبدل</p>
+                                <div class="cum-card" id="cum-card">
+                                    <div class="cum-ico" aria-hidden="true"><svg class="ic ic-fill"><use href="#i-gem"/></svg></div>
+                                    <div class="cum-body">
+                                        <span class="cum-lbl">النقاط التراكمية</span>
+                                        <div class="cum-row"><b class="cum-num" id="lt-total">0</b><span class="cum-unit">نقطة</span></div>
+                                        <small class="cum-sub">كل اللي كسبته من أول يوم · هي اللي بتحدد مستواك · <u>ما بتنقص لما تصرف</u></small>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Tier Badge -->
                             <div class="flex flex-col items-center">
@@ -309,7 +322,7 @@
                         <div class="mt-6">
                             <div class="flex justify-between flex-wrap gap-x-4 gap-y-1 text-sm mb-4 font-semibold">
                                 <span class="text-zinc-300">المستوى الحالي: <span class="tier-txt" id="tier-cur-name">ذهبي</span></span>
-                                <span class="text-zinc-300" id="tier-next-wrap">المستوى التالي: <span class="text-zinc-100" id="tier-next-name">بلاتيني</span> <span id="tier-next-pts">(5,000 نقطة)</span></span>
+                                <span class="text-zinc-300" id="tier-next-wrap">المستوى التالي: <span class="text-zinc-100" id="tier-next-name">بلاتيني</span> <span id="tier-next-pts">(5,000 نقطة تراكمية)</span></span>
                             </div>
                             <div class="flex items-center gap-5 sm:gap-8">
                                 <div class="o2-bottle empty" id="o2-bottle" role="img" aria-label="زجاجة O2 تمتلئ باللون الأحمر كلما زادت نقاطك">
@@ -322,19 +335,19 @@
                                             <i class="ob-bub" style="left:63%;--s:7px;--d:3.8s;--dl:1.5s"></i>
                                             <i class="ob-bub" style="left:84%;--s:5px;--d:3s;--dl:2.1s"></i>
                                         </div>
-                                    </div>
+                                    
+                                        <div class="ob-pctin" aria-hidden="true"><b id="ob-pct">0</b><i>%</i></div>
+</div>
                                     <div class="ob-shine"></div>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-baseline gap-1">
-                                        <span id="ob-pct" class="text-5xl md:text-6xl font-black text-white">0</span>
-                                        <span class="text-2xl font-black text-o2-red">%</span>
-                                    </div>
-                                    <p class="text-sm text-zinc-400 mt-1"><span id="ob-lbl">تقدّمك في المستوى</span>: <span id="ob-cur" class="text-white font-bold">0</span> / <span id="ob-max">5,000</span> نقطة</p>
-                                    <p class="text-xs text-zinc-400 mt-4" id="tier-need-p">تحتاج <span class="text-white font-bold" id="tier-need">1,750</span> نقطة إضافية للترقية</p>
+                                <div class="flex-1 min-w-0 ob-side">
+                                    <p class="ob-kick">تقدّمك نحو المستوى التالي</p>
+                                    <p class="ob-big"><b id="ob-cur">0</b><span class="ob-slash">/</span><span id="ob-max">5,000</span></p>
+                                    <p class="ob-lbl" id="ob-lbl">نقطة تراكمية في هذا المستوى</p>
+                                    <p class="text-xs text-zinc-400 mt-4" id="tier-need-p">تحتاج <span class="text-white font-bold" id="tier-need">1,750</span> نقطة تراكمية إضافية للترقية</p>
                                 </div>
                             </div>
-                            <div class="tier-road" id="tier-road"></div><p class="tr-note" id="tr-note"></p>
+                            <div class="tier-road" id="tier-road" role="group" aria-label="مستويات العضوية — اضغط على أي مستوى لتعرف هديته وسحبه"></div><p class="tr-note" id="tr-note"></p>
                             <div class="ob-win" id="ob-win">🎉 مبروك! امتلأت زجاجتك — وصلت لمستوى البلاتيني 👑</div>
                             <button type="button" class="ob-tilt-btn" id="ob-tilt-btn" hidden>📱 فعّل ميلان الزجاجة مع موبايلك</button>
                             <button type="button" class="wh-btn js-open-wheel" id="wh-dash-btn"><i class="wh-dot"></i><span>🎡</span><span id="wh-dash-t">لفّ عجلة الحظ اليومية</span></button>
@@ -622,42 +635,12 @@
         </div>
     </article>
 
-    
-    <!-- تشكين فرايز -->
-    <article class="cake-card meal-card w-[75vw] sm:w-[300px] shrink-0 snap-center bg-o2card border border-zinc-800 rounded-2xl overflow-hidden flex flex-col h-full">
-        <div class="relative w-full aspect-[4/3] bg-zinc-950 overflow-hidden shrink-0">
-            <img class="cake-img w-full h-full object-cover" loading="lazy" src="https://i.postimg.cc/xjcBLKnK/image.png" alt="تشكين فرايز">
-            <div class="absolute inset-0 bg-gradient-to-t from-o2card via-o2card/50 to-transparent"></div>
-                                    <button type="button" onclick="openMenuVideoModal('assets/media/2_Motion.mp4')" class="absolute bottom-3 left-3 bg-black/70 hover:bg-o2red text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200 z-20 backdrop-blur-sm focus:outline-none cursor-pointer">
-                <svg class="ic text-[10px] ic-fill" aria-hidden="true"><use href="#i-play"/></svg>
-                <span>معاينة</span>
-            </button>
-            <span class="absolute top-3 right-3 text-base font-black px-3.5 py-1 cake-price bg-o2red text-white rounded-full shadow-lg shadow-o2red/40 z-10">30 ₪</span>
-        </div>
-        <div class="p-5 flex flex-col flex-grow justify-between">
-            <div>
-                <div class="flex items-center gap-3 mb-3">
-                    <svg class="ic text-o2red" aria-hidden="true"><use href="#i-soup"/></svg>
-                    <h3 class="text-xl font-bold text-gray-100 meal-title">تشكين فرايز</h3>
-                </div>
-                <div class="h-px bg-gradient-to-l from-o2red/60 to-transparent mb-3"></div>
-                <h4 class="text-o2red font-bold text-sm mb-1">المكونات:</h4>
-                <p class="text-zinc-300 text-sm leading-relaxed meal-ingredients">قطع دجاج كرسبي مقلي + بطاطا (شيبس) في الأسفل + صوص رانش + صوص باربيكيو + فلفل هالبينو حار.</p>
-            </div>
-        </div>
-    </article>
-
-    
     <!-- بيغ ماك -->
     <article class="cake-card meal-card w-[75vw] sm:w-[300px] shrink-0 snap-center bg-o2card border border-zinc-800 rounded-2xl overflow-hidden flex flex-col h-full">
         <div class="relative w-full aspect-[4/3] bg-zinc-950 overflow-hidden shrink-0">
             <img class="cake-img w-full h-full object-cover" loading="lazy" src="https://i.postimg.cc/hjhxfZLL/image-(11).jpg" alt="بيغ ماك">
             <div class="absolute inset-0 bg-gradient-to-t from-o2card via-o2card/50 to-transparent"></div>
             <span class="absolute top-3 right-3 text-base font-black px-3.5 py-1 cake-price bg-o2red text-white rounded-full shadow-lg shadow-o2red/40 z-10">40 ₪</span>
-                        <button type="button" onclick="openMenuVideoModal('assets/media/Animate.mp4')" class="absolute bottom-3 left-3 bg-black/70 hover:bg-o2red text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition-colors duration-200 z-20 backdrop-blur-sm focus:outline-none cursor-pointer">
-                <svg class="ic text-[10px] ic-fill" aria-hidden="true"><use href="#i-play"/></svg>
-                <span>معاينة</span>
-            </button>
         </div>
         <div class="p-5 flex flex-col flex-grow justify-between">
             <div>
@@ -788,6 +771,26 @@
                 <div class="h-px bg-gradient-to-l from-o2red/60 to-transparent mb-3"></div>
                 <h4 class="text-o2red font-bold text-sm mb-1">المكونات:</h4>
                 <p class="text-zinc-300 text-sm leading-relaxed meal-ingredients">تفاصيل الزينجر المعتادة وبحجم مضاعف ×2 دجاج كرسبي مقلي.</p>
+            </div>
+        </div>
+    </article>
+
+    <!-- تشكين فرايز -->
+    <article class="cake-card meal-card w-[75vw] sm:w-[300px] shrink-0 snap-center bg-o2card border border-zinc-800 rounded-2xl overflow-hidden flex flex-col h-full">
+        <div class="relative w-full aspect-[4/3] bg-zinc-950 overflow-hidden shrink-0">
+            <img class="cake-img w-full h-full object-cover" loading="lazy" src="https://i.postimg.cc/xjcBLKnK/image.png" alt="تشكين فرايز">
+            <div class="absolute inset-0 bg-gradient-to-t from-o2card via-o2card/50 to-transparent"></div>
+            <span class="absolute top-3 right-3 text-base font-black px-3.5 py-1 cake-price bg-o2red text-white rounded-full shadow-lg shadow-o2red/40 z-10">30 ₪</span>
+        </div>
+        <div class="p-5 flex flex-col flex-grow justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-3">
+                    <svg class="ic text-o2red" aria-hidden="true"><use href="#i-soup"/></svg>
+                    <h3 class="text-xl font-bold text-gray-100 meal-title">تشكين فرايز</h3>
+                </div>
+                <div class="h-px bg-gradient-to-l from-o2red/60 to-transparent mb-3"></div>
+                <h4 class="text-o2red font-bold text-sm mb-1">المكونات:</h4>
+                <p class="text-zinc-300 text-sm leading-relaxed meal-ingredients">قطع دجاج كرسبي مقلي + بطاطا (شيبس) في الأسفل + صوص رانش + صوص باربيكيو + فلفل هالبينو حار.</p>
             </div>
         </div>
     </article>
@@ -2162,6 +2165,7 @@
 <script src="assets/js/sound.js"></script>
 <script src="assets/js/script.js"></script>
 <script src="assets/js/loyalty.js"></script>
+<script src="assets/js/kid.js"></script>
 <script src="assets/js/swipe.js"></script>
 <script src="assets/js/motion.js"></script>
     </body>

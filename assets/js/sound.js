@@ -40,6 +40,7 @@
         click: function (t) { tone(700, t, 0.05, 'triangle', 0.05, 420); },
         tick:  function (t) { tone(1200, t, 0.03, 'square', 0.025); },
         add:   function (t) { tone(520, t, 0.07, 'sine', 0.08); tone(780, t + 0.06, 0.1, 'sine', 0.08); },
+        pour:  function (t) { tone(900, t, 0.12, 'sine', 0.03, 1500); tone(1300, t + 0.07, 0.12, 'sine', 0.025, 800); tone(1700, t + 0.15, 0.1, 'sine', 0.02, 1100); },
         coin:  function (t) { tone(988, t, 0.08, 'square', 0.035); tone(1319, t + 0.07, 0.22, 'square', 0.035); },
         spend: function (t) { tone(660, t, 0.09, 'sine', 0.07, 440); tone(440, t + 0.09, 0.16, 'sine', 0.06, 300); },
         deny:  function (t) { tone(190, t, 0.12, 'sawtooth', 0.045); tone(160, t + 0.14, 0.16, 'sawtooth', 0.045); },

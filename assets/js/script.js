@@ -53,14 +53,12 @@ function openMenuVideoModal(videoSourceUrl) {
         // فحص نوع الرابط إذا كان ملف محلي MP4 أو رابط خارجي متوافق لتحديد طريقة العرض
         if (videoSourceUrl.endsWith('.mp4') || !videoSourceUrl.includes('iframe')) {
             wrapper.innerHTML = `
-            <div class="w-full relative bg-black" style="padding-bottom: 177.778%; height: 0;"> 
-                <video id="activeMenuVideo" class="absolute inset-0 w-full h-full object-contain" controls playsinline autoplay> 
-                    <source src="${videoSourceUrl}" type="video/mp4"> 
-                    متصفحك لا يدعم تشغيل الفيديو. 
-                </video> 
-            </div>
-
-
+                <div class="w-full relative bg-black" style="padding-bottom: 177.778%; height: 0;">
+                    <video id="activeMenuVideo" class="absolute inset-0 w-full h-full object-cover" controls playsinline autoplay>
+                        <source src="${videoSourceUrl}" type="video/mp4">
+                        متصفحك لا يدعم تشغيل الفيديو.
+                    </video>
+                </div>
             `;
             
             // التعامل مع قيود التشغيل التلقائي بالمتصفحات لملفات mp4 المباشرة
@@ -301,7 +299,7 @@ function forceCloseGlobalModal() {
         const WM = document.createElement('div');
         WM.id = 'o2-wheel'; WM.className = 'wh-modal';
         WM.innerHTML = `<div class="wh-box" data-lenis-prevent role="dialog" aria-label="عجلة الحظ اليومية"><button type="button" class="wh-x" aria-label="إغلاق">×</button>
-            <h3 class="text-xl font-black">عجلة الحظ اليومية 🎡</h3><p class="text-sm text-zinc-400 mt-1">لفّة وحدة مجانية كل يوم · اربح نقاط تروح مباشرة لرصيدك</p>
+            <h3 class="text-xl font-black">عجلة الحظ اليومية 🎡</h3><p class="text-sm text-zinc-400 mt-1">لفّة وحدة مجانية كل يوم · اربح نقاط تنضاف مباشرة لنقاطك</p>
             <div class="wh-stage"><div class="wh-ptr"></div><div class="wh-wheel" id="wh-wheel">${wheelSVG()}</div></div>
             <button type="button" class="wh-spin" id="wh-spin">لفّ الآن!</button><div class="wh-res" id="wh-res"></div></div>`;
         document.body.appendChild(WM);
@@ -1199,7 +1197,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
         });
 
         giveBtn.addEventListener('click', function (e) {
-            if (balance() < chosen) { say('رصيدك ما بيكفي لهالمبلغ — جرّب مبلغ أقل', true); vib([10, 40, 10]); return; }
+            if (balance() < chosen) { say('نقاطك المتاح صرفها ما بتكفي لهالمبلغ — جرّب مبلغ أقل', true); vib([10, 40, 10]); return; }
             spend(chosen, 'تبرّع للزجاجة المجتمعية');
             var before = Community.read().total, d = Community.donate(chosen);
             var filled = Math.floor(d.total / CAP) > Math.floor(before / CAP);
@@ -1265,7 +1263,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
             '<label class="bm-lbl">لمين؟ <small>(اختياري)</small><input id="bm-to" class="bm-in" maxlength="24" placeholder="اسم صاحبك" autocomplete="off"></label>' +
             '<label class="bm-lbl">رسالتك<textarea id="bm-msg" class="bm-in" rows="3" maxlength="140" placeholder="اكتب رسالتك هون..."></textarea><span class="bm-count"><b id="bm-n">0</b>/140</span></label>' +
             '<label class="bm-lbl">من؟ <small>(اختياري)</small><input id="bm-from" class="bm-in" maxlength="24" placeholder="اسمك" autocomplete="off"></label>' +
-            '<div class="bm-lbl">هدية نقاط <small>(بتنخصم من رصيدك)</small></div>' +
+            '<div class="bm-lbl">هدية نقاط <small>(بتنخصم من نقاطك المتاح صرفها)</small></div>' +
             '<div class="bm-gifts" id="bm-gifts">' + GIFTS.map(function (g) { return '<button type="button" data-g="' + g + '" aria-pressed="' + (g === 0) + '">' + (g ? '+' + g + ' نقطة' : 'بدون هدية') + '</button>'; }).join('') + '</div>' +
             '<div class="bm-err" id="bm-err" aria-live="polite"></div>' +
             '<button type="button" class="bm-go" id="bm-go">جهّز البطاقة 💌</button>');
@@ -1282,7 +1280,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
         go.addEventListener('click', function () {
             var m = msgIn.value.trim().replace(/\s+/g, ' ');
             if (m.length < 3) { err.textContent = 'اكتب رسالة (3 أحرف عالأقل)'; return; }
-            if (gift > balance()) { err.textContent = 'رصيدك ما بيكفي لهالهدية'; return; }
+            if (gift > balance()) { err.textContent = 'نقاطك المتاح صرفها ما بتكفي لهالهدية'; return; }
             var o = { i: Math.random().toString(36).slice(2, 10), m: m.slice(0, 140), f: $('#bm-from').value.trim().slice(0, 24), t: $('#bm-to').value.trim().slice(0, 24), g: gift };
             if (gift) spend(gift, 'هدية بطاقة O2');
             showResult(location.href.split('#')[0] + '#card=' + enc(o), o);
@@ -1343,7 +1341,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
                     claim.addEventListener('click', function (ev) {
                         claimed.push(b.id); store.set('o2.cards.claimed', claimed.slice(-50)); dd.n++; store.set('o2.cards.day', dd);
                         earn(b.g, 'بطاقة من O2'); claim.hidden = true;
-                        note.textContent = 'تمام! ضفنا ' + b.g + ' نقطة لرصيدك 🎉'; confetti(ev.clientX, ev.clientY); vib([15, 30, 15]); sound('win');
+                        note.textContent = 'تمام! ضفنا ' + b.g + ' نقطة لنقاطك 🎉'; confetti(ev.clientX, ev.clientY); vib([15, 30, 15]); sound('win');
                     });
                 }
             }

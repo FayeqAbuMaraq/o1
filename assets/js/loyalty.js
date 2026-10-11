@@ -1,7 +1,7 @@
 /* loyalty.js — نظام النقاط والمستويات
-   - الرصيد (balance): بنقص لما تصرف نقاط على مكافأة
-   - الإجمالي (lifetime): كل النقاط اللي كسبتها — بتحسب للمستوى حتى لو صرفتها
-   - 4 مستويات (فضي ← ذهبي ← بلاتيني ← ماسي)، الزجاجة بتتعبى لحد المستوى التالي وبعدين بتفرغ بلون سائل جديد
+   - النقاط المتاح صرفها (balance): بتنقص لما تصرف نقاط على مكافأة
+   - النقاط التراكمية (lifetime): كل النقاط اللي كسبتها — بتحدد المستوى حتى لو صرفتها
+   - 6 مستويات (فضي ← ذهبي ← بلاتيني ← ياقوتي ← ماسي ← أسطوري)، كل مستوى إله هدية وسحب (draw) — الزجاجة بتتعبى لحد المستوى التالي وبعدين بتفرغ بلون سائل جديد
    - O2_DEMO: لوحة تجربة مؤقتة (احذفها بوضع window.O2_DEMO = false أو حذف البلوك) */
 (function () {
     'use strict';
@@ -11,22 +11,34 @@
     var TIERS = [
         { id: 'silver', name: 'فضي', adj: 'الفضية', min: 0, gift: 0, icon: 'i-star',
           accent: '#cbd5e1', a: '#f8fafc', b: '#94a3b8', liq: ['#e2e8f0', '#94a3b8', '#475569'],
-          coin: { f: 'linear-gradient(135deg,#ffffff 0%,#cbd5e1 42%,#64748b 100%)', k: 'linear-gradient(135deg,#cbd5e1,#64748b)', s: ['#3b4658', '#586478'] } },
-        { id: 'gold', name: 'ذهبي', adj: 'الذهبية', min: 2500, gift: 300, icon: 'i-crown',
+          coin: { f: 'linear-gradient(135deg,#ffffff 0%,#cbd5e1 42%,#64748b 100%)', k: 'linear-gradient(135deg,#cbd5e1,#64748b)', s: ['#3b4658', '#586478'] },
+          draw: { name: 'سحب الفضة الأسبوعي', prize: 'مشروب مجاني', when: 'كل أسبوع' } },
+        { id: 'gold', name: 'ذهبي', adj: 'الذهبية', min: 1000, gift: 150, icon: 'i-crown',
           accent: '#facc15', a: '#fde047', b: '#ca8a04', liq: ['#ffe066', '#f5b301', '#a86a00'],
-          coin: { f: 'linear-gradient(135deg,#fff7c2 0%,#f7c948 42%,#c58a12 100%)', k: 'linear-gradient(135deg,#f0c24a,#b8860b)', s: ['#8a5a0b', '#a8741a'] } },
-        { id: 'platinum', name: 'بلاتيني', adj: 'البلاتينية', min: 5000, gift: 500, icon: 'i-gem',
+          coin: { f: 'linear-gradient(135deg,#fff7c2 0%,#f7c948 42%,#c58a12 100%)', k: 'linear-gradient(135deg,#f0c24a,#b8860b)', s: ['#8a5a0b', '#a8741a'] },
+          draw: { name: 'سحب الذهب', prize: 'ساندويتش مجاني', when: 'كل أسبوعين' } },
+        { id: 'platinum', name: 'بلاتيني', adj: 'البلاتينية', min: 2500, gift: 300, icon: 'i-snowflake',
           accent: '#38bdf8', a: '#bae6fd', b: '#0284c7', liq: ['#bae6fd', '#38bdf8', '#0c5a85'],
-          coin: { f: 'linear-gradient(135deg,#f0fbff 0%,#7dd3fc 42%,#0369a1 100%)', k: 'linear-gradient(135deg,#7dd3fc,#0369a1)', s: ['#0b4a6e', '#0e638f'] } },
-        { id: 'diamond', name: 'ماسي', adj: 'الماسية', min: 10000, gift: 1000, icon: 'i-flame',
+          coin: { f: 'linear-gradient(135deg,#f0fbff 0%,#7dd3fc 42%,#0369a1 100%)', k: 'linear-gradient(135deg,#7dd3fc,#0369a1)', s: ['#0b4a6e', '#0e638f'] },
+          draw: { name: 'سحب البلاتين الشهري', prize: 'وجبة كاملة مجانية', when: 'كل شهر' } },
+        { id: 'ruby', name: 'ياقوتي', adj: 'الياقوتية', min: 4500, gift: 450, icon: 'i-heart',
+          accent: '#fb7185', a: '#fecdd3', b: '#be123c', liq: ['#fda4af', '#f43f5e', '#881337'],
+          coin: { f: 'linear-gradient(135deg,#fff1f2 0%,#fb7185 42%,#9f1239 100%)', k: 'linear-gradient(135deg,#fb7185,#9f1239)', s: ['#6b0f2a', '#8c1b3d'] },
+          draw: { name: 'سحب الياقوت', prize: 'عشاء لشخصين', when: 'كل شهر' } },
+        { id: 'diamond', name: 'ماسي', adj: 'الماسية', min: 7500, gift: 700, icon: 'i-gem',
           accent: '#c084fc', a: '#e9d5ff', b: '#7e22ce', liq: ['#e9b8ff', '#a855f7', '#5b1a99'],
-          coin: { f: 'linear-gradient(135deg,#fbf0ff 0%,#d8b4fe 42%,#7e22ce 100%)', k: 'linear-gradient(135deg,#d8b4fe,#7e22ce)', s: ['#4c1580', '#6528a3'] } }
+          coin: { f: 'linear-gradient(135deg,#fbf0ff 0%,#d8b4fe 42%,#7e22ce 100%)', k: 'linear-gradient(135deg,#d8b4fe,#7e22ce)', s: ['#4c1580', '#6528a3'] },
+          draw: { name: 'سحب الماس الفصلي', prize: 'قسيمة مشتريات 300 ₪', when: 'كل 3 شهور' } },
+        { id: 'legend', name: 'أسطوري', adj: 'الأسطورية', min: 12000, gift: 1000, icon: 'i-flame',
+          accent: '#fb923c', a: '#fed7aa', b: '#c2410c', liq: ['#fdba74', '#f97316', '#9a3412'],
+          coin: { f: 'linear-gradient(135deg,#fff3e6 0%,#fdba74 42%,#c2410c 100%)', k: 'linear-gradient(135deg,#fdba74,#c2410c)', s: ['#7c2d0a', '#a23d10'] },
+          draw: { name: 'السحب الأسطوري الكبير', prize: 'وجبات مجانية لمدة سنة', when: 'مرة كل سنة' } }
     ];
 
     var $ = function (id) { return document.getElementById(id); };
     var fmt = function (n) { return Math.round(n).toLocaleString('en-US'); };
     var snd = function (n) { if (window.O2Sound) O2Sound.play(n); };
-    var st = load(), shownBal = 0, busy = false, started = false, timers = [], curIdx = -1, bannerT = null, needMax = null, wasOpen = false, numTok = 0;
+    var st = load(), shownBal = 0, shownLT = 0, ltTok = 0, busy = false, started = false, timers = [], curIdx = -1, bannerT = null, needMax = null, wasOpen = false, numTok = 0;
 
     function load() {
         try {
@@ -34,12 +46,12 @@
             if (o && isFinite(o.balance) && isFinite(o.lifetime)) {
                 var l = Math.max(0, o.lifetime | 0);
                 return { lifetime: l, balance: Math.min(Math.max(0, o.balance | 0), l),
-                         gi: (o.v === 2 && isFinite(o.gi)) ? Math.min(Math.max(0, o.gi | 0), TIERS.length - 1) : info(l).i, pg: Math.max(0, o.pg | 0) };
+                         gi: (o.v === 3 && isFinite(o.gi)) ? Math.min(Math.max(0, o.gi | 0), TIERS.length - 1) : info(l).i, pg: Math.max(0, o.pg | 0) };
             }
         } catch (e) {}
         return { balance: 3250, lifetime: 3250, gi: info(3250).i, pg: 0 };
     }
-    function save() { try { localStorage.setItem(KEY, JSON.stringify(Object.assign({ v: 2 }, st))); } catch (e) {} }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(Object.assign({ v: 3 }, st))); } catch (e) {} }
     function later(ms, fn) { timers.push(setTimeout(fn, ms)); }
     function clearTimers() { timers.forEach(clearTimeout); timers = []; }
 
@@ -106,38 +118,81 @@
     function buildRoad() {
         var r = $('tier-road'); if (!r) return;
         r.innerHTML = TIERS.map(function (t, i) {
-            var node = '<div class="tr-node" data-i="' + i + '" style="--c:' + t.accent + '"><svg class="ic" aria-hidden="true"><use href="#' + t.icon + '"/></svg><b>' + t.name + '</b><small>' + fmt(t.min) + '</small>' + (t.gift ? '<em class="tr-gift">🎁 +' + fmt(t.gift) + '</em>' : '') + '</div>';
-            var link = i < TIERS.length - 1 ? '<div class="tr-link" data-l="' + i + '" style="z-index: -1; --c1:' + t.accent + ';--c2:' + TIERS[i + 1].accent + '"><i class="tr-fill"></i><i class="tr-spark"></i></div>' : '';
+            var node = '<button type="button" class="tr-node" data-i="' + i + '" style="--c:' + t.accent + '" aria-label="تفاصيل مستوى ' + t.name + '"><svg class="ic" aria-hidden="true"><use href="#' + t.icon + '"/></svg><b>' + t.name + '</b><small>' + fmt(t.min) + '</small></button>';
+            var link = i < TIERS.length - 1 ? '<div class="tr-link" data-l="' + i + '" style="z-index:-1;--c1:' + t.accent + ';--c2:' + TIERS[i + 1].accent + '"><i class="tr-fill"></i><i class="tr-spark"></i></div>' : '';
             return node + link;
         }).join('');
+        r.onclick = function (e) { var n = e.target.closest('.tr-node'); if (n) openTier(+n.dataset.i); };
     }
     function updateRoad(I, noFill) {
         var r = $('tier-road'); if (!r) return;
         [].forEach.call(r.querySelectorAll('.tr-node'), function (n) {
             var i = +n.dataset.i;
             n.classList.toggle('done', i < I.i); n.classList.toggle('cur', i === I.i); n.classList.toggle('next', i === I.i + 1);
+            if (i === I.i) n.setAttribute('aria-current', 'step'); else n.removeAttribute('aria-current');
         });
         [].forEach.call(r.querySelectorAll('.tr-link'), function (l) {
             var i = +l.dataset.l, p = noFill ? 0 : (i < I.i ? 100 : i === I.i ? I.pct : 0);
             l.style.setProperty('--p', p + '%');
-            l.classList.toggle('active', i === I.i);
+            l.classList.toggle('active', i === I.i);        // الجزء اللي إنت فيه بيتمدد ويصير هو التركيز
         });
         var note = $('tr-note'); if (!note) return;
         note.innerHTML = I.nx
-            ? (I.nx.gift ? '🎁 ترقّى لمستوى ' + I.nx.name + ' واربح <b>+' + fmt(I.nx.gift) + '</b> نقطة هدية' : '') + '<small>النقاط اللي بتصرفها ما بتنقص من مستواك</small>'
-            : '👑 وصلت لأعلى مستوى<small>النقاط اللي بتصرفها ما بتنقص من مستواك</small>';
+            ? (I.nx.gift ? '🎁 ترقّى لمستوى ' + I.nx.name + ' واربح <b>+' + fmt(I.nx.gift) + '</b> نقطة هدية' : '') + '<small>المستوى بيحسب من النقاط التراكمية — صرفك للنقاط ما بنزّلك مستوى</small>'
+            : '👑 وصلت لأعلى مستوى<small>المستوى بيحسب من النقاط التراكمية — صرفك للنقاط ما بنزّلك مستوى</small>';
     }
 
-    /* ---------- عرض الرصيد والمكافآت ---------- */
+    /* ---------- مودال المستوى: الهدية + السحب ---------- */
+    function esc(x) { return String(x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function openTier(i) {
+        var U = window.O2UI; if (!U || !TIERS[i]) return;
+        var t = TIERS[i], I = info(st.lifetime), state = i < I.i ? 'done' : i === I.i ? 'cur' : 'lock', need = Math.max(0, t.min - st.lifetime);
+        var chip = state === 'done' ? '✓ وصلت له' : state === 'cur' ? '★ مستواك الحالي' : '🔒 لسا مقفل';
+        var giftBox = t.gift
+            ? '<div class="tm-box"><i>🎁</i><div><b>هدية الترقية: +' + fmt(t.gift) + ' نقطة</b><span>بتنضاف لنقاطك المتاح صرفها وللتراكمية أول ما توصل للمستوى</span></div></div>'
+            : '<div class="tm-box"><i>🚀</i><div><b>مستوى البداية</b><span>كل الأعضاء بيبدؤوا من هون — ما في هدية ترقية، بس السحب شغّال معك</span></div></div>';
+        var drawBox = '<div class="tm-box tm-draw"><i>🎟️</i><div><b>' + esc(t.draw.name) + '</b><span>بتدخل تلقائياً السحب على <u>' + esc(t.draw.prize) + '</u> · ' + esc(t.draw.when) + '</span></div></div>';
+        var foot = state === 'lock'
+            ? '<div class="tm-need"><div class="tm-bar"><i style="width:' + Math.min(100, st.lifetime / t.min * 100).toFixed(1) + '%"></i></div><p>ناقصك <b>' + fmt(need) + '</b> نقطة تراكمية عشان توصل لهالمستوى</p></div>'
+            : '<p class="tm-ok">' + (state === 'cur' ? 'إنت دايخل السحب هلأ ✨' : 'بتضل داخل السحب بمستواك الحالي أو الأعلى') + '</p>';
+        U.openM('<div class="tm" style="--c:' + t.accent + ';--a:' + t.a + ';--b:' + t.b + '">' +
+            '<div class="tm-ring"><svg class="ic ic-fill" aria-hidden="true"><use href="#' + t.icon + '"/></svg></div>' +
+            '<span class="tm-chip ' + state + '">' + chip + '</span>' +
+            '<h3>مستوى ' + t.name + '</h3>' +
+            '<p class="tm-min">' + (t.min ? 'من <b>' + fmt(t.min) + '</b> نقطة تراكمية' : 'نقطة البداية — <b>0</b> نقطة') + '</p>' +
+            giftBox + drawBox + foot +
+            '<div class="tm-nav"><button type="button" class="tm-prev"' + (i ? '' : ' disabled') + '>المستوى السابق</button><button type="button" class="tm-next"' + (i < TIERS.length - 1 ? '' : ' disabled') + '>المستوى التالي</button></div>' +
+            '</div>');
+        var m = document.getElementById('o2-modal'); if (!m) return;
+        var pv = m.querySelector('.tm-prev'), nx = m.querySelector('.tm-next');
+        if (pv) pv.onclick = function () { openTier(i - 1); };
+        if (nx) nx.onclick = function () { openTier(i + 1); };
+    }
+
+    /* ---------- عرض النقاط المتاح صرفها والمكافآت ---------- */
     function renderBalance(anim, delta) {
         var c = $('points-counter'); if (!c) return;
         if (anim && window.animateValue) animateValue(c, shownBal, st.balance, Math.min(1400, 500 + Math.abs(st.balance - shownBal) * 0.6));
         else c.textContent = st.balance.toLocaleString('en-US');
         shownBal = st.balance;
-        var lt = $('lt-total'); if (lt) lt.textContent = fmt(st.lifetime);
+        tweenLT(st.lifetime, anim);
         if (delta) floatDelta(delta);
+        if (delta > 0 && window.O2Kid) O2Kid.pour(delta);   // الطفل بيصب النقاط: جزء للزجاجة وجزء للبار
         updateRewards(); updateDemo();
         if (window.o2UpdateLockMeters) o2UpdateLockMeters(st.balance);
+    }
+    function tweenLT(to, anim) {
+        var e = $('lt-total'); if (!e) return;
+        var from = shownLT; shownLT = to;
+        if (!anim || REDUCE || from === to) { e.textContent = fmt(to); return; }
+        var tok = ++ltTok, t0 = performance.now(), dur = Math.min(1400, 500 + Math.abs(to - from) * 0.6);
+        (function tick(now) {
+            if (tok !== ltTok) return;
+            var t = Math.min((now - t0) / dur, 1), k = 1 - Math.pow(1 - t, 5);
+            e.textContent = fmt(from + (to - from) * k);
+            if (t < 1) requestAnimationFrame(tick); else e.textContent = fmt(to);
+        })(t0);
+        var card = $('cum-card'); if (card && to > from) { card.classList.remove('bump'); void card.offsetWidth; card.classList.add('bump'); }
     }
     function updateRewards() {
         [].forEach.call(document.querySelectorAll('.reward-card button[onclick*="showRedeemModal"]'), function (b) {
@@ -165,17 +220,17 @@
         set('tier-cur-name', I.t.name); set('tier-badge-txt', 'العضوية ' + I.t.adj);
         var ico = $('tier-ico'); if (ico) ico.setAttribute('href', '#' + I.t.icon);
         var nw = $('tier-next-wrap');
-        if (nw) { nw.style.display = I.nx ? '' : 'none'; if (I.nx) { set('tier-next-name', I.nx.name); set('tier-next-pts', '(' + fmt(I.nx.min) + ' نقطة)'); } }
+        if (nw) { nw.style.display = I.nx ? '' : 'none'; if (I.nx) { set('tier-next-name', I.nx.name); set('tier-next-pts', '(' + fmt(I.nx.min) + ' نقطة تراكمية)'); } }
         var np = $('tier-need-p');
         if (np && needMax !== !I.nx) {
             needMax = !I.nx;
-            np.innerHTML = I.nx ? 'تحتاج <span class="text-white font-bold" id="tier-need">' + fmt(I.need) + '</span> نقطة إضافية للترقية' : '👑 أنت بأعلى مستوى';
+            np.innerHTML = I.nx ? 'تحتاج <span class="text-white font-bold" id="tier-need">' + fmt(I.need) + '</span> نقطة تراكمية إضافية للترقية' : '👑 أنت بأعلى مستوى';
         }
-        var lbl = $('ob-lbl'); if (lbl) lbl.textContent = I.nx ? 'نقطة في هذا المستوى' : 'نقطة إجمالاً';
+        var lbl = $('ob-lbl'); if (lbl) lbl.textContent = I.nx ? 'نقطة تراكمية في هذا المستوى' : 'نقطة تراكمية إجمالاً';
         setBottle(I.pct, !I.nx);
         tweenNums(I.pct, I.cur, I.span, I.need, !I.nx);
         updateRoad(I, !started);
-        if (!I.nx && started) banner('👑 وصلت لأعلى مستوى — ماسي!', true); else if (bannerT === null) hideBanner();
+        if (!I.nx && started) banner('👑 وصلت لأعلى مستوى — ' + TIERS[TIERS.length - 1].name + '!', true); else if (bannerT === null) hideBanner();
     }
 
     /* ---------- الترقية ---------- */
@@ -246,7 +301,7 @@
         st.balance -= n; save(); renderBalance(true, -n); snd('spend'); return true;
     }
     function deny(cost) {
-        toast('رصيدك ناقص ' + fmt(cost - st.balance) + ' نقطة 🔒'); snd('deny');
+        toast('ناقصك ' + fmt(cost - st.balance) + ' نقطة من النقاط المتاح صرفها 🔒'); snd('deny');
         var row = $('pts-row'); if (row) { row.classList.remove('pts-shake'); void row.offsetWidth; row.classList.add('pts-shake'); }
     }
     function set(l, b) {
@@ -257,7 +312,7 @@
         renderBalance(true); renderTier({});
     }
     function start() {
-        started = true; shownBal = 0; needMax = null;
+        started = true; shownBal = 0; shownLT = 0; needMax = null;
         renderBalance(true); renderTier({});
         if (st.pg) later(1500, claimPending);
         var I = info(st.lifetime);
@@ -272,7 +327,7 @@
         var ico = $('tier-ico'); if (ico) ico.setAttribute('href', '#' + I.t.icon);
         updateRoad(I, true); updateRewards();
         if (window.o2UpdateLockMeters) o2UpdateLockMeters(st.balance);
-        var lt = $('lt-total'); if (lt) lt.textContent = fmt(st.lifetime);
+        var lt = $('lt-total'); if (lt) lt.textContent = '0';
         buildDemo();
     }
 
@@ -283,8 +338,8 @@
         var p = document.createElement('div'); p.id = 'demo-panel'; p.className = 'demo-panel'; p.hidden = true; p.setAttribute('data-lenis-prevent', '');
         var btn = function (cls, act, v, t) { return '<button type="button" data-nosound class="' + cls + '" data-act="' + act + '" data-v="' + v + '">' + t + '</button>'; };
         p.innerHTML = '<div class="dp-h"><b>🧪 وضع التجربة</b><small>مؤقت — للمعاينة فقط</small><button type="button" class="dp-x" data-nosound aria-label="إغلاق">×</button></div>' +
-            '<div class="dp-row"><span>اكتساب (يزيد الرصيد والمستوى)</span><div class="dp-btns">' + [100, 500, 1000, 2500].map(function (n) { return btn('up', 'earn', n, '+' + fmt(n)); }).join('') + '</div></div>' +
-            '<div class="dp-row"><span>صرف (ينقص الرصيد فقط)</span><div class="dp-btns">' + [100, 500, 1000, 2500].map(function (n) { return btn('down', 'spend', n, '−' + fmt(n)); }).join('') + '</div></div>' +
+            '<div class="dp-row"><span>اكتساب (يزيد المتاح صرفها والتراكمية)</span><div class="dp-btns">' + [100, 500, 1000, 2500].map(function (n) { return btn('up', 'earn', n, '+' + fmt(n)); }).join('') + '</div></div>' +
+            '<div class="dp-row"><span>صرف (ينقص المتاح صرفها بس)</span><div class="dp-btns">' + [100, 500, 1000, 2500].map(function (n) { return btn('down', 'spend', n, '−' + fmt(n)); }).join('') + '</div></div>' +
             '<div class="dp-row"><span>قفز لمستوى</span><div class="dp-btns">' + TIERS.map(function (t, i) { return btn('', 'jump', i, t.name); }).join('') + '</div></div>' +
             '<div class="dp-row"><div class="dp-btns">' + btn('', 'near', 0, '⚡ قبل الترقية بـ 100') + btn('', 'wheel', 0, '🎡 تصفير عجلة اليوم') + btn('', 'reset', 0, '↺ إعادة الضبط') + '</div></div>' +
             '<div class="dp-state" id="dp-state"></div>';
@@ -311,7 +366,7 @@
     function updateDemo() {
         var s = $('dp-state'); if (!s) return;
         var I = info(st.lifetime);
-        s.innerHTML = 'الرصيد: <b>' + fmt(st.balance) + '</b> · الإجمالي: <b>' + fmt(st.lifetime) + '</b> · ' + I.t.name;
+        s.innerHTML = 'المتاح صرفها: <b>' + fmt(st.balance) + '</b> · التراكمية: <b>' + fmt(st.lifetime) + '</b> · ' + I.t.name;
     }
 
     window.O2Loyalty = { start: start, earn: earn, spend: spend, deny: deny, set: set,
