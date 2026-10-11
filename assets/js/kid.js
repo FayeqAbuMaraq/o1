@@ -97,5 +97,11 @@
         })(i);
     }
 
+    // الصندوق = مستواك الحالي: الضغطة بتفتح مودال المستوى
+    var crate = $('kid-crate');
+    if (crate) crate.addEventListener('click', function () {
+        if (window.O2Loyalty && O2Loyalty.openTier) O2Loyalty.openTier(O2Loyalty.info(O2Loyalty.lifetime()).i);
+    });
+
     window.O2Kid = { pour: pour };
 })();

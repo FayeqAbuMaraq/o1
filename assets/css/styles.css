@@ -157,26 +157,15 @@ html{color-scheme:dark;-webkit-text-size-adjust:100%}
             color: #e60000;
         }
 
-        /* ===== Intro: logo zoom reveal ===== */
+        /* ===== Intro: fly through the opening of the "O" ===== */
         #o2-intro {
             position: fixed; inset: 0; z-index: 9999;
-            background-color: var(--s1);
-            display: flex; align-items: center; justify-content: center;
+            background: transparent;      /* the dark curtain is drawn in the SVG so the O's opening can reveal the page */
             overflow: hidden;
-            transition: background-color 0.45s var(--ease);
-            -webkit-mask-image: none; mask-image: none;
+            pointer-events: all;
         }
-        #o2-intro.is-red { background-color: rgb(226, 1, 5); }
-        #o2-intro .o2-logo-wrap {
-            width: clamp(96px, 14vw, 140px);
-            opacity: 0;
-            animation: o2IntroFade 0.7s var(--ease) 0.15s forwards;
-        }
-        #o2-intro img { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
-        @keyframes o2IntroFade {
-            from { opacity: 0; transform: scale(0.8); }
-            to   { opacity: 1; transform: scale(1); }
-        }
+        #o2-intro .o2-stage { position: absolute; inset: 0; display: block; }
+        #o2-intro .o2-back { fill: var(--s1); }
         /* hold the page's own entrance animations until the intro opens */
         body.intro-active main *, body.intro-active nav * { animation-play-state: paused !important; }
 

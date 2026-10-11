@@ -370,7 +370,7 @@
     }
 
     window.O2Loyalty = { start: start, earn: earn, spend: spend, deny: deny, set: set,
-        balance: function () { return st.balance; }, lifetime: function () { return st.lifetime; }, tiers: TIERS, info: info };
+        balance: function () { return st.balance; }, lifetime: function () { return st.lifetime; }, tiers: TIERS, info: info, openTier: openTier };
 
     init();
     document.addEventListener('DOMContentLoaded', function () { applyParticles(info(st.lifetime).t); });
