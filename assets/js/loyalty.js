@@ -32,7 +32,7 @@
         { id: 'legend', name: 'أسطوري', adj: 'الأسطورية', min: 12000, gift: 1000, icon: 'i-flame',
           accent: '#fb923c', a: '#fed7aa', b: '#c2410c', liq: ['#fdba74', '#f97316', '#9a3412'],
           coin: { f: 'linear-gradient(135deg,#fff3e6 0%,#fdba74 42%,#c2410c 100%)', k: 'linear-gradient(135deg,#fdba74,#c2410c)', s: ['#7c2d0a', '#a23d10'] },
-          draw: { name: 'السحب الأسطوري الكبير', prize: 'وجبات مجانية لمدة سنة', when: 'مرة كل سنة' } }
+          draw: { name: 'السحب الأسطوري الكبير', prize: 'قسيمة مشتريات 1000 ₪', when: 'مرة كل سنة' } }
     ];
 
     var $ = function (id) { return document.getElementById(id); };
@@ -154,7 +154,7 @@
         var drawBox = '<div class="tm-box tm-draw"><i>🎟️</i><div><b>' + esc(t.draw.name) + '</b><span>بتدخل تلقائياً السحب على <u>' + esc(t.draw.prize) + '</u> · ' + esc(t.draw.when) + '</span></div></div>';
         var foot = state === 'lock'
             ? '<div class="tm-need"><div class="tm-bar"><i style="width:' + Math.min(100, st.lifetime / t.min * 100).toFixed(1) + '%"></i></div><p>ناقصك <b>' + fmt(need) + '</b> نقطة تراكمية عشان توصل لهالمستوى</p></div>'
-            : '<p class="tm-ok">' + (state === 'cur' ? 'إنت دايخل السحب هلأ ✨' : 'بتضل داخل السحب بمستواك الحالي أو الأعلى') + '</p>';
+            : '<p class="tm-ok">' + (state === 'cur' ? 'إنت الان داخل السحب ✨' : 'بتضل داخل السحب بمستواك الحالي أو الأعلى') + '</p>';
         U.openM('<div class="tm" style="--c:' + t.accent + ';--a:' + t.a + ';--b:' + t.b + '">' +
             '<div class="tm-ring"><svg class="ic ic-fill" aria-hidden="true"><use href="#' + t.icon + '"/></svg></div>' +
             '<span class="tm-chip ' + state + '">' + chip + '</span>' +
